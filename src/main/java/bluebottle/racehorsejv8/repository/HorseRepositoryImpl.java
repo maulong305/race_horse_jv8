@@ -42,4 +42,26 @@ public class HorseRepositoryImpl implements HorseRepositoryCustom{
         query.setParameter("horseName",str);
         return query.getResultList();
     }
+
+    @Override
+    public List<Horse> findAllByFoaled(Long id, String year, Pageable pageable) {
+        Integer pageIndex = pageable.getPageNumber();
+        Integer pageSize = pageable.getPageSize();
+
+        List<String> jpqls = new ArrayList<>();
+        jpqls.add("select h from Horse h ");
+        jpqls.add("inner join h.accounts a ");
+        jpqls.add("inner join Trainer t on t.account = a ");
+        jpqls.add("where t.id = :trainerId ");
+        jpqls.add("and year(h.foaled) = :horseFoaled");
+
+        String jpql = jpqls.stream().reduce("", (current, element) -> current + element);
+
+        TypedQuery<Horse> query = entityManager.createQuery(jpql, Horse.class);
+        query.setFirstResult(pageIndex * pageSize);
+        query.setMaxResults(pageSize);
+        query.setParameter("trainerId", id);
+        query.setParameter("horseFoaled", Integer.valueOf(year));
+        return query.getResultList();
+    }
 }

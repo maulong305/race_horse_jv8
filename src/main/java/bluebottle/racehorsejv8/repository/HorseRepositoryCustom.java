@@ -10,4 +10,5 @@ import java.util.List;
 public interface HorseRepositoryCustom {
     List<Horse> findAllByTrainerId(Long id);
     List<Horse> findAllByTrainerIdAndHorseName(Long id, String name, Pageable pageable);
+    List<Horse> findAllByFoaled(Long id, String year, Pageable pageable);
 }

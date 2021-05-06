@@ -11,4 +11,5 @@ public interface HorseService extends IService<Horse>{
     HorseResponse update(UpdateHorseRequest request);
     List<Horse> findAllByTrainer(Long id);
     List<Horse> findAllByTrainerAndName(Long id, String name, Pageable pageable);
+    List<Horse> findAllByFoaled(Long id, String year, Pageable pageable);
 }

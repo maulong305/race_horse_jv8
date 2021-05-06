@@ -56,4 +56,9 @@ public class HorseServiceImpl implements HorseService{
     public List<Horse> findAllByTrainerAndName(Long id, String name, Pageable pageable) {
         return horseRepository.findAllByTrainerIdAndHorseName(id, name, pageable);
     }
+
+    @Override
+    public List<Horse> findAllByFoaled(Long id, String year, Pageable pageable) {
+        return horseRepository.findAllByFoaled(id, year, pageable);
+    }
 }

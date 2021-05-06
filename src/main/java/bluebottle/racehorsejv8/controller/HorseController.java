@@ -110,4 +110,22 @@ public class HorseController {
         return new ResponseEntity<>(horseResponseList, HttpStatus.OK);
     }
 
+    @GetMapping("getAllByFoaled")
+    public ResponseEntity<List<HorseResponse>> getAllByFoaled(@RequestParam("trainerId") Long id,
+                                                      @RequestParam("year") String year,
+                                                      @RequestParam Integer pageIndex,
+                                                      @RequestParam Integer pageSize){
+        Pageable pageable = PageRequest.of(pageIndex, pageSize);
+        Trainer trainer = trainerService.findById(id);
+        List<Horse> horses = horseService.findAllByFoaled(id, year, pageable);
+        List<HorseResponse> horseResponseList = new ArrayList<>();
+        if (trainer == null || horses == null)
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        for (Horse horse : horses){
+            HorseResponse horseResponse = new HorseResponse(horse);
+            horseResponseList.add(horseResponse);
+        }
+        return new ResponseEntity<>(horseResponseList, HttpStatus.OK);
+    }
+
 }
