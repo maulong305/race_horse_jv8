@@ -8,21 +8,20 @@ import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HorseServiceRepoImpl implements HorseRepositoryCustom{
+public class HorseRepositoryImpl implements HorseRepositoryCustom{
     @PersistenceContext
     private EntityManager entityManager;
     @Override
     public List<Horse> findAllByTrainerId(Long id) {
         List<String> jpqls = new ArrayList<>();
-        jpqls.add("SELECT * FROM Horse");
-//        jpqls.add("select h from Horse h ");
-//        jpqls.add("inner join h.accounts a ");
-//        jpqls.add("inner join Trainer t on t.account = a ");
-//        jpqls.add("where t.id = 3");
+        jpqls.add("select h from Horse h ");
+        jpqls.add("inner join h.accounts a ");
+        jpqls.add("inner join Trainer t on t.account = a ");
+        jpqls.add("where t.id = :trainerId");
         String jpql = jpqls.stream().reduce("",(current, element) -> current + element);
 
         TypedQuery<Horse> query = entityManager.createQuery(jpql, Horse.class);
-//        query.setParameter("trainerId", id);
+        query.setParameter("trainerId", id);
         return query.getResultList();
     }
 }
