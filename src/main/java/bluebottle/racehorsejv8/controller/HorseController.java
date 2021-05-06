@@ -33,9 +33,9 @@ public class HorseController {
 
     @GetMapping
     public ResponseEntity<List<HorseResponse>> getAll(@RequestParam(name = "pageIndex", required = false)
-                                              Integer pageIndex,
-                                              @RequestParam(name = "pageSize", required = false)
-                                              Integer pageSize){
+                                                              Integer pageIndex,
+                                                      @RequestParam(name = "pageSize", required = false)
+                                                              Integer pageSize) {
         pageSize = pageSize != null ? pageSize : 5;
         pageIndex = pageIndex != null ? pageIndex : 0;
         Pageable pageable = PageRequest.of(pageIndex, pageSize);
@@ -43,8 +43,8 @@ public class HorseController {
         List<HorseResponse> horseResponseList = new ArrayList<>();
         if (horses == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }else {
-            for (Horse horse : horses){
+        } else {
+            for (Horse horse : horses) {
                 HorseResponse horseResponse = new HorseResponse(horse);
                 horseResponseList.add(horseResponse);
             }
@@ -53,7 +53,7 @@ public class HorseController {
     }
 
     @PostMapping("create")
-    public ResponseEntity<Horse> create(@RequestBody HorseRequest horseRequest){
+    public ResponseEntity<Horse> create(@RequestBody HorseRequest horseRequest) {
         Horse horse = new Horse();
         BeanUtils.copyProperties(horseRequest, horse);
         horse.setFoaled(CURRENT_DATE);
@@ -62,13 +62,13 @@ public class HorseController {
     }
 
     @PutMapping("update")
-    public ResponseEntity<HorseResponse> edit(@RequestBody UpdateHorseRequest updateHorseRequest){
+    public ResponseEntity<HorseResponse> edit(@RequestBody UpdateHorseRequest updateHorseRequest) {
         HorseResponse horseResponse = horseService.update(updateHorseRequest);
         return new ResponseEntity<>(horseResponse, HttpStatus.OK);
     }
 
     @DeleteMapping("delete")
-    public ResponseEntity<Void> delete(@RequestParam Long id){
+    public ResponseEntity<Void> delete(@RequestParam Long id) {
         Horse horse = horseService.findById(id);
         if (horse == null)
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -77,19 +77,37 @@ public class HorseController {
     }
 
     @GetMapping("getAllByTrainerId")
-    public ResponseEntity<List<HorseResponse>> getAllByTrainerId(@RequestParam("trainerId") Long id){
+    public ResponseEntity<List<HorseResponse>> getAllByTrainerId(@RequestParam("trainerId") Long id) {
         Trainer trainer = trainerService.findById(id);
         List<Horse> horses = horseService.findAllByTrainer(id);
         List<HorseResponse> horseResponseList = new ArrayList<>();
-        if (trainer == null || horses == null){
+        if (trainer == null || horses == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }else {
-            for (Horse horse : horses){
+        } else {
+            for (Horse horse : horses) {
                 HorseResponse horseResponse = new HorseResponse(horse);
                 horseResponseList.add(horseResponse);
             }
             return new ResponseEntity<>(horseResponseList, HttpStatus.OK);
         }
+    }
+
+    @GetMapping("getAllByTrainerIdAndName")
+    public ResponseEntity<List<HorseResponse>> getAllByTrainerIdAndName(@RequestParam("trainerId") Long id,
+                                                                        @RequestParam("horseName") String horseName,
+                                                                        @RequestParam Integer pageIndex,
+                                                                        @RequestParam Integer pageSize) {
+        Trainer trainer = trainerService.findById(id);
+        Pageable pageable = PageRequest.of(pageIndex, pageSize);
+        List<Horse> horses = horseService.findAllByTrainerAndName(id, horseName, pageable);
+        List<HorseResponse> horseResponseList = new ArrayList<>();
+        if (trainer == null || horses == null)
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        for (Horse horse : horses) {
+            HorseResponse horseResponse = new HorseResponse(horse);
+            horseResponseList.add(horseResponse);
+        }
+        return new ResponseEntity<>(horseResponseList, HttpStatus.OK);
     }
 
 }
